@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import css from "./App.module.css";
+// import css from "./App.module.css";
 import Modal from "components/Modal/Modal";
 
 
