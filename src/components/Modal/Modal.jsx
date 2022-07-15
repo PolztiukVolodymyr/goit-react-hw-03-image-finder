@@ -2,21 +2,36 @@ import React, { Component } from "react";
 import { createPortal } from "react-dom";
 import css from "./Modal.module.css";
 
+
 const modalRoot = document.querySelector("#modal-root");
 
 export default class Modal extends Component{
 
     componentDidMount() {
-        console.log("modal componentDidMount");
+        window.addEventListener("keydown", this.handleKeyDown)
     }
     componentWillUnmount() {
-        console.log(" modal componentWillUnmount");
+        window.removeEventListener("keydown", this.handleKeyDown)
+    }
+
+    handleKeyDown = evt => {
+        if (evt.code === "Escape") {
+                console.log("Escape!!!");
+                this.props.onClose();
+            }
+    }
+
+    handleBackdropClick = evt => {
+        if (evt.target === evt.currentTarget) {
+            this.props.onClose();
+        
+        }
     }
 
     render() {
         return createPortal(
-            <div className={css.modal_backdrop}>
-                <div className={css.modal_content}>{this.props.children}</div>
+            <div onClick={this.handleBackdropClick} className={css.overlay}>
+                <div className={css.modal}>{this.props.children}</div>
             </div>, modalRoot
         );
     }
