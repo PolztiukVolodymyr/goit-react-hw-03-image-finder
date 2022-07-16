@@ -15,9 +15,10 @@ class Searchbar extends Component{
         evt.preventDefault();
         if (this.state.value.trim() === "") {
             toast.error("Enter search value, please!");
+            return;
         }
         this.props.onSubmit(this.state.value);
-        console.log(this.state.value)
+        this.setState({ value: "" });
         
     }
 
