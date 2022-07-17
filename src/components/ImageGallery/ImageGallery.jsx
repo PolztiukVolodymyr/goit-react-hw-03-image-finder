@@ -1,7 +1,7 @@
 import css from "./ImageGallery.module.css";
 import ImageGalleryItem from "../ImageGalleryItem/ImageGalleryItem";
 
-export default function ImageGallery({ images, openModal }) {
+export default function ImageGallery({ images, onClick }) {
     return (
         <ul className={css.ImageGallery}>
             {images.map(({ id, webformatURL, tags, largeImageURL }) => (
@@ -9,7 +9,7 @@ export default function ImageGallery({ images, openModal }) {
                     key={id}
                     webformatURL={webformatURL}
                     alt={tags}
-                    onOpen={() => openModal(largeImageURL, tags)}
+                    onClick={() => onClick(largeImageURL, tags)}
                 /> 
             ))}
   

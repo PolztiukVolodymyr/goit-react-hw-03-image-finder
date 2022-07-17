@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import {BsSearch} from 'react-icons/bs';
 import { toast } from 'react-toastify';
 import css from "./Searchbar.module.css";
 
@@ -14,7 +15,7 @@ class Searchbar extends Component{
     handleFormSubmit = evt => {
         evt.preventDefault();
         if (this.state.value.trim() === "") {
-            toast.error("Enter search value, please!");
+            toast.error("Enter a different search value, please!");
             return;
         }
         this.props.onSubmit(this.state.value);
@@ -28,6 +29,7 @@ class Searchbar extends Component{
                 <form className={css.SearchForm} onSubmit={this.handleFormSubmit}>
                     <button type="submit" className={css.SearchFormButton}>
                         <span className={css.SearchFormButtonLabel}>Search</span>
+                        <BsSearch size={25}/>
                     </button>
 
                     <input

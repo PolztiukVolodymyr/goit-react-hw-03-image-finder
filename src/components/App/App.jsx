@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import css from "./App.module.css";
 import ImageGallery from "../ImageGallery/ImageGallery";
 import Button from "components/Button/Button";
 import Modal from "components/Modal/Modal";
@@ -17,19 +17,29 @@ export class App extends Component{
     showModal: false,
     loading: false,
     images: [],
-    largImage: "",
+    largeImageURL: "",
     alt: ""
   };
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.searchName !== this.state.searchName) {
+  async componentDidUpdate(prevProps, prevState) {
+    const { searchName, page } = this.state;
+    if (prevState.searchName !== searchName) {
       console.log("Name changed!");
-      this.setState({loading: true})
-      setTimeout(() => {
-        searchImage(this.state.searchName, this.state.page)
-        .finally(this.setState({ loading: false }))
-  },2000)
-    }
+      this.setState({ loading: true })
+      // console.log("prevState.name:", prevState.searchName);
+      // console.log("this.state.name:", this.state.searchName);
+   }
+
+   if(searchName !== prevState.searchName || page !== prevState.page){
+     const response = await searchImage(searchName, page)
+           .finally(this.setState({ loading: false }))
+     console.log("response:", response);
+     const images = response.hits.map(({ id, tags, webformatURL, largeImageURL }) => (
+       { id, tags, webformatURL, largeImageURL }));
+     console.log("images:", images);
+        this.setState((state) => ({images: [...state.images, ...images], }));
+   }
+ 
   }
 
   hendleSubmit = evt => {
@@ -45,24 +55,24 @@ export class App extends Component{
     }))
   }
 
-  onImgClick = (largImage, alt) => {
-    this.setState({ largImage, alt });
+  onImgClick = (largeImageURL, alt) => {
+    this.setState({ largeImageURL, alt });
     this.togleModal();
     
   }
 
   render() {
-    const { showModal, images} = this.state;
+    const { showModal, images, largeImageURL, alt} = this.state;
   
     return (
     
-      <div>
+      <div className={css.Container}>
         <Searchbar onSubmit={this.hendleSubmit} />
         <ImageGallery images={images} onClick={this.onImgClick} />
-        <button type="button" onClick={this.togleModal}>Open Modal</button>
+        {/* <button type="button" onClick={this.togleModal}>Open Modal</button> */}
         {showModal && <Modal onClose={this.togleModal}>
-          <h1>Content Modal</h1>
-           <button type="button" onClick={this.togleModal}>Close Modal</button>
+          <img src={largeImageURL} alt={alt}/>
+           {/* <button type="button" onClick={this.togleModal}>Close Modal</button> */}
         </Modal>}
         <Button />
         {this.state.loading && <div>Loading...</div>}

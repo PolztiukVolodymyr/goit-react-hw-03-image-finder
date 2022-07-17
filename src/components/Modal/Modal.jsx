@@ -16,9 +16,8 @@ export default class Modal extends Component{
 
     handleKeyDown = evt => {
         if (evt.code === "Escape") {
-                console.log("Escape!!!");
                 this.props.onClose();
-            }
+        };
     }
 
     handleBackdropClick = evt => {
