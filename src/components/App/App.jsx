@@ -26,7 +26,7 @@ export class App extends Component{
 
   async componentDidUpdate(prevProps, prevState) {
     const { searchName, page } = this.state;
-    if (prevState.searchName !== searchName) {
+     try{    if (prevState.searchName !== searchName) {
         this.setState({ loading: true, images: [], page: 1, visible: false })
     }
        
@@ -37,15 +37,19 @@ export class App extends Component{
     
 
      if (images.length > 0) {
-         this.setState({ visible: true })
+       this.setState({ visible: true })
+        toast.success("We have found something for you!");
      } else {
       toast.warning("We haven't found anything on your request");
        this.setState({ visible: false })
      }
     
       this.setState((state) => ({ images: [...state.images, ...images], loading: false }));
-      //  toast.success("We have found something for you");
-   }
+      
+       }
+     } catch (eror) {
+       console.log(eror.message);
+     }
  
   }
 

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import {BsSearch} from 'react-icons/bs';
 import { toast } from 'react-toastify';
+import PropTypes from 'prop-types';
 import css from "./Searchbar.module.css";
 
 class Searchbar extends Component{
@@ -15,7 +16,7 @@ class Searchbar extends Component{
     handleFormSubmit = evt => {
         evt.preventDefault();
         if (this.state.value.trim() === "") {
-            toast.error("Enter a different search value, please!");
+            toast.error("Enter a search value, please!");
             return;
         }
         this.props.onSubmit(this.state.value);
@@ -44,6 +45,10 @@ class Searchbar extends Component{
                 </form>
             </header>);
     }
-}
+};
 
 export default Searchbar;
+
+Searchbar.propTypes = {
+    onSubmit: PropTypes.func.isRequired,
+};
