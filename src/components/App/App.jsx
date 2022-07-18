@@ -1,12 +1,14 @@
 import React, { Component } from "react";
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
 import css from "./App.module.css";
 import ImageGallery from "../ImageGallery/ImageGallery";
 import Button from "components/Button/Button";
 import Modal from "components/Modal/Modal";
 import Searchbar from "../Searchbar/Searchbar";
 import searchImage from "../../services/Api";
+import Loader from "../Loader/Loader";
 
 
 export class App extends Component{
@@ -18,35 +20,38 @@ export class App extends Component{
     loading: false,
     images: [],
     largeImageURL: "",
-    alt: ""
-  };
+    alt: "",
+    visible: false,
+    };
 
   async componentDidUpdate(prevProps, prevState) {
     const { searchName, page } = this.state;
     if (prevState.searchName !== searchName) {
-      console.log("Name changed!");
-      this.setState({ loading: true })
-      // console.log("prevState.name:", prevState.searchName);
-      // console.log("this.state.name:", this.state.searchName);
-   }
-
-   if(searchName !== prevState.searchName || page !== prevState.page){
-     const response = await searchImage(searchName, page)
-           .finally(this.setState({ loading: false }))
-     console.log("response:", response);
-     const images = response.hits.map(({ id, tags, webformatURL, largeImageURL }) => (
+        this.setState({ loading: true, images: [], page: 1, visible: false })
+    }
+       
+    if (searchName !== prevState.searchName || page !== prevState.page) {
+         const response = await searchImage(searchName, page)
+         const images = response.hits.map(({ id, tags, webformatURL, largeImageURL }) => (
        { id, tags, webformatURL, largeImageURL }));
-     console.log("images:", images);
-        this.setState((state) => ({images: [...state.images, ...images], }));
+    
+
+     if (images.length > 0) {
+         this.setState({ visible: true })
+     } else {
+      toast.warning("We haven't found anything on your request");
+       this.setState({ visible: false })
+     }
+    
+      this.setState((state) => ({ images: [...state.images, ...images], loading: false }));
+      //  toast.success("We have found something for you");
    }
  
   }
 
   hendleSubmit = evt => {
     this.setState({ page: 1 });
-    this.setState({ searchName: evt});
-    console.log(evt);
-
+    this.setState({ searchName: evt });
   }
 
   togleModal = () => {
@@ -61,21 +66,26 @@ export class App extends Component{
     
   }
 
+  onLoadMore = () => {
+    this.setState(state => ({ page: state.page + 1 }));
+  }
+
   render() {
-    const { showModal, images, largeImageURL, alt} = this.state;
+    const { showModal, images, largeImageURL, alt, visible, loading} = this.state;
   
     return (
     
       <div className={css.Container}>
         <Searchbar onSubmit={this.hendleSubmit} />
+        {loading && <Loader/>}
         <ImageGallery images={images} onClick={this.onImgClick} />
-        {/* <button type="button" onClick={this.togleModal}>Open Modal</button> */}
+       
         {showModal && <Modal onClose={this.togleModal}>
           <img src={largeImageURL} alt={alt}/>
            {/* <button type="button" onClick={this.togleModal}>Close Modal</button> */}
         </Modal>}
-        <Button />
-        {this.state.loading && <div>Loading...</div>}
+        {visible && <Button onClick={this.onLoadMore}/>}
+        
         <ToastContainer type="error" theme="colored" autoClose={3000}/>
     </div>
   )
