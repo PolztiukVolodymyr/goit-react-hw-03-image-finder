@@ -33,17 +33,17 @@ export class App extends Component{
     if (searchName !== prevState.searchName || page !== prevState.page) {
          const response = await searchImage(searchName, page)
          const images = response.hits.map(({ id, tags, webformatURL, largeImageURL }) => (
-       { id, tags, webformatURL, largeImageURL }));
-    
+           { id, tags, webformatURL, largeImageURL }));
+      
+      images.length > 0
+        ? toast.success("We have found something for you!")
+        : toast.warning("We haven't found anything on your request");
 
-     if (images.length > 0) {
-       this.setState({ visible: true })
-        toast.success("We have found something for you!");
-     } else {
-      toast.warning("We haven't found anything on your request");
-       this.setState({ visible: false })
-     }
-    
+      images.length > 11
+        ? this.setState({ visible: true })
+        : this.setState({ visible: false });
+     
+  
       this.setState((state) => ({ images: [...state.images, ...images], loading: false }));
       
        }
@@ -81,13 +81,13 @@ export class App extends Component{
     
       <div className={css.Container}>
         <Searchbar onSubmit={this.hendleSubmit} />
-        {loading && <Loader/>}
         <ImageGallery images={images} onClick={this.onImgClick} />
        
         {showModal && <Modal onClose={this.togleModal}>
           <img src={largeImageURL} alt={alt}/>
            {/* <button type="button" onClick={this.togleModal}>Close Modal</button> */}
         </Modal>}
+        {loading && <Loader/>}
         {visible && <Button onClick={this.onLoadMore}/>}
         
         <ToastContainer type="error" theme="colored" autoClose={3000}/>
